@@ -1,0 +1,22 @@
+<h1 id="tableLabel">Roads</h1>
+
+<p *ngIf="!roads"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="roads">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let road of roads">
+      <td>{{ road.roadId }}</td>
+      <td>{{ getRoadNameById(road.startSettlementId) }}</td>
+      <td>{{ getRoadNameById(road.endSettlementId) }}</td>
+      <td>{{ road.Length }}</td>
+    </tr>
+  </tbody>
+</table>

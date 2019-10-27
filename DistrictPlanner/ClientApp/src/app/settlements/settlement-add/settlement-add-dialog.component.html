@@ -1,0 +1,8 @@
+<form [formGroup]="createForm" (ngSubmit)="onSubmit()">
+  <label>
+    Settlement name:
+    <input type="text" formControlName="name">
+  </label>
+  <button type="submit" [disabled]="!createForm.valid">Submit</button>
+  <button (click)="onCancel()">Close</button>
+</form>

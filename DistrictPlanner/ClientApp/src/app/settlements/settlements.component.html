@@ -1,0 +1,24 @@
+<h1 id="tableLabel">Settlements</h1>
+
+<p *ngIf="!settlements"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="settlements">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let settlement of settlements">
+      <td>{{ settlement.settlementId }}</td>
+      <td>{{ settlement.name }}</td>
+      <td>
+        <button (click)="updateSettlement(settlement)">Update</button>
+        <button (click)="deleteSettlement(settlement)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<button (click)="createSettlement()">Add Settlement</button>
