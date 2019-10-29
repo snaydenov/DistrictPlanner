@@ -11,6 +11,7 @@ import { SettlementsComponent } from './settlements/settlements.component';
 import { RoadsComponent } from './roads/roads.component';
 import { SettlementAddDialogComponent } from './settlements/settlement-add/settlement-add-dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RoadManageDialogComponent } from './roads/roads-manage-dialog/road-manage-dialog.component';
 
 @NgModule({
   declarations: [
@@ -19,10 +20,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
         HomeComponent,
         SettlementsComponent,
         RoadsComponent,
-        SettlementAddDialogComponent
+        SettlementAddDialogComponent,
+        RoadManageDialogComponent
   ],
   entryComponents: [
-      SettlementAddDialogComponent
+      SettlementAddDialogComponent,
+      RoadManageDialogComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

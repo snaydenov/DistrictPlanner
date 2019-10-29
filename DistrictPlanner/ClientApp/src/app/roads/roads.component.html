@@ -2,21 +2,27 @@
 
 <p *ngIf="!roads"><em>Loading...</em></p>
 
-<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="roads">
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="roads && settlements">
   <thead>
     <tr>
       <th>Id</th>
       <th>Start</th>
       <th>End</th>
       <th>Length</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let road of roads">
       <td>{{ road.roadId }}</td>
-      <td>{{ getRoadNameById(road.startSettlementId) }}</td>
-      <td>{{ getRoadNameById(road.endSettlementId) }}</td>
-      <td>{{ road.Length }}</td>
+      <td>{{ getSettlementNameById(road.startSettlementId) }}</td>
+      <td>{{ getSettlementNameById(road.endSettlementId) }}</td>
+      <td>{{ road.distance }}</td>
+      <td>
+        <button (click)="updateRoad(road)">Update</button>
+        <button (click)="deleteRoad(road)">Delete</button>
+      </td>
     </tr>
   </tbody>
 </table>
+<button (click)="createRoad()">Add Road</button>

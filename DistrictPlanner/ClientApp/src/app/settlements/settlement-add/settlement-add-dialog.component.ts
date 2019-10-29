@@ -20,8 +20,6 @@ export class SettlementAddDialogComponent implements OnInit {
         if (this.settlement) {
             this.createForm.setValue({ name: this.settlement.name });
         }
-
-        console.log(this.settlement);
     }
 
     createForm = new FormGroup({

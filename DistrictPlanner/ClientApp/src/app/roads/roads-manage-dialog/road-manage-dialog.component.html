@@ -1,0 +1,16 @@
+<form [formGroup]="createForm" (ngSubmit)="onSubmit()">
+  Start:
+  <select required formControlName="startSettlementId">
+    <option *ngFor="let settlement of settlements" [value]="settlement.settlementId">{{settlement.name}}</option>
+  </select>
+  End:
+  <select required formControlName="endSettlementId">
+    <option *ngFor="let settlement of settlements" [value]="settlement.settlementId">{{settlement.name}}</option>
+  </select>
+  <label>
+    Length:
+    <input type="number" formControlName="distance" min="0">
+  </label>
+  <button type="submit" [disabled]="!createForm.valid">Submit</button>
+  <button (click)="onCancel()">Close</button>
+</form>
