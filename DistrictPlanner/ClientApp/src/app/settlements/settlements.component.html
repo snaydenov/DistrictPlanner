@@ -13,7 +13,7 @@
   <tbody>
     <tr *ngFor="let settlement of settlements">
       <td>{{ settlement.settlementId }}</td>
-      <td>{{ settlement.name }}</td>
+      <td>{{ settlement.name }} <span *ngIf="settlement.isMain">&nbsp; Main setttlement</span></td>
       <td>
         <button (click)="updateSettlement(settlement)">Update</button>
         <button (click)="deleteSettlement(settlement)">Delete</button>
@@ -22,3 +22,5 @@
   </tbody>
 </table>
 <button (click)="createSettlement()">Add Settlement</button>
+
+<button (click)="getMainSettlement()">Get main settlement</button>

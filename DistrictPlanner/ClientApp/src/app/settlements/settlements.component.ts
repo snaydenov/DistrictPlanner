@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Settlement } from '../shared/models/settlement';
 import { MatDialogConfig, MatDialog, MatDialogRef } from '@angular/material';
 import { SettlementAddDialogComponent } from './settlement-add/settlement-add-dialog.component';
+import { SettlementsService } from '../shared/services/settlements.service';
 
 @Component({
   selector: 'settlements',
@@ -11,25 +12,22 @@ import { SettlementAddDialogComponent } from './settlement-add/settlement-add-di
 export class SettlementsComponent {
     public settlements: Settlement[];
 
-    constructor(public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public dialog: MatDialog) {
-        http.get<Settlement[]>(baseUrl + 'api/settlements').subscribe(result => {
+    constructor(public http: HttpClient,
+        @Inject('BASE_URL') public baseUrl: string,
+        public dialog: MatDialog,
+        public settlementsService: SettlementsService) {
+        this.settlementsService.getSettlements().subscribe(result => {
              this.settlements = result;
-        }, error => console.error(error));
+        });
     }
 
     public createSettlement() {
         this.dialog.open(SettlementAddDialogComponent).afterClosed()
             .subscribe(item => {
                 if (item) {
-                    let settlement: Settlement = { settlementId: undefined  , name: item };
+                    let settlement: Settlement = { settlementId: undefined  , name: item, isMain:false};
 
-                    const httpOptions = {
-                        headers: new HttpHeaders({
-                            'Content-Type': 'application/json',
-                        })
-                    };
-
-                    this.http.post(this.baseUrl + 'api/settlements', settlement, httpOptions).subscribe(result => {
+                    this.settlementsService.createSettlement(settlement).subscribe(result => {
                         this.settlements.push(result as Settlement);
                     });
                 }
@@ -42,16 +40,11 @@ export class SettlementsComponent {
         dialogRef.componentInstance.settlement = settlement;
 
         dialogRef.afterClosed()
-            .subscribe(settlement => {
-                if (settlement) {
-                    
-                    const httpOptions = {
-                        headers: new HttpHeaders({
-                            'Content-Type': 'application/json',
-                        })
-                    };
+            .subscribe(value => {
+                console.log(value);
+                if (value) {
 
-                    this.http.put(this.baseUrl + 'api/settlements/' + settlement.settlementId, settlement, httpOptions).subscribe(result => {
+                    this.settlementsService.updateSettlement(value).subscribe(result => {
                     });
                 }
             });
@@ -59,8 +52,34 @@ export class SettlementsComponent {
 
     public deleteSettlement(settlement:Settlement) {
 
-        this.http.delete(this.baseUrl + 'api/settlements/' + settlement.settlementId).subscribe(result => {
+        this.settlementsService.deleteSettlement(settlement).subscribe(result => {
             this.settlements = this.settlements.filter(set => set.settlementId != settlement.settlementId);
           });      
+    }
+
+    public getMainSettlement() {
+        return this.settlementsService.getMainSettlement().subscribe(result => {
+            if (result && !result.isMain) {
+                alert('Setting main settlement to ' + result.name);
+
+                result.isMain = true;
+
+                let oldMainSettlement = this.settlements.find(s => s.isMain);
+
+                if (oldMainSettlement) {
+                    oldMainSettlement.isMain = false;
+                    this.settlementsService.updateSettlement(oldMainSettlement).subscribe();
+                }
+
+                this.settlementsService.updateSettlement(result).subscribe(result => {
+                    this.settlementsService.getSettlements().subscribe(result => {
+                        this.settlements = result;
+                    });
+                });
+            }
+            else {
+                alert('No changes');
+            }
+        });
     }
 }

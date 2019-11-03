@@ -4,6 +4,8 @@ import { Road } from '../shared/models/road';
 import { Settlement } from '../shared/models/settlement';
 import { RoadManageDialogComponent } from './roads-manage-dialog/road-manage-dialog.component';
 import { MatDialog, MatDialogRef } from '@angular/material';
+import { RoadsService } from '../shared/services/roads.service';
+import { SettlementsService } from '../shared/services/settlements.service';
 
 @Component({
   selector: 'roads',
@@ -12,12 +14,16 @@ import { MatDialog, MatDialogRef } from '@angular/material';
 export class RoadsComponent {
   public roads: Road[];
     public settlements: Settlement[];
-    constructor(public http: HttpClient, @Inject('BASE_URL') public baseUrl: string, public dialog: MatDialog) {
-        http.get<Settlement[]>(baseUrl + 'api/settlements').subscribe(result => {
+    constructor(public http: HttpClient,
+        @Inject('BASE_URL') public baseUrl: string,
+        public dialog: MatDialog,
+        public roadsService: RoadsService,
+        public settlementsService: SettlementsService) {
+        settlementsService.getSettlements().subscribe(result => {
             this.settlements = result;
         }, error => console.error(error));
 
-        http.get<Road[]>(baseUrl + 'api/roads').subscribe(result => {
+        roadsService.getRoads().subscribe(result => {
             this.roads = result;
         }, error => console.error(error));
     }
@@ -33,13 +39,7 @@ export class RoadsComponent {
 
         dialogRef.afterClosed().subscribe(road => {
                 if (road) {
-                    const httpOptions = {
-                        headers: new HttpHeaders({
-                            'Content-Type': 'application/json',
-                        })
-                    };
-
-                    this.http.post(this.baseUrl + 'api/roads', road, httpOptions).subscribe(result => {
+                    this.roadsService.createRoad(road).subscribe(result => {
                         this.roads.push(result as Road);
                     });
                 }
@@ -56,13 +56,7 @@ export class RoadsComponent {
             .subscribe(road => {
                 if (road) {
 
-                    const httpOptions = {
-                        headers: new HttpHeaders({
-                            'Content-Type': 'application/json',
-                        })
-                    };
-
-                    this.http.put(this.baseUrl + 'api/roads/' + road.roadId, road, httpOptions).subscribe(result => {
+                    this.roadsService.updateRoad(road).subscribe(result => {
                     });
                 }
             });
@@ -70,7 +64,7 @@ export class RoadsComponent {
 
     public deleteRoad(road: Road) {
 
-        this.http.delete(this.baseUrl + 'api/roads/' + road.roadId).subscribe(result => {
+        this.roadsService.deleteRoad(road).subscribe(result => {
             this.roads = this.roads.filter(r => r.roadId != road.roadId);
         });
     }
