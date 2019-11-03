@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DistrictPlanner.Models;
+using DistrictPlanner.Services;
 
 namespace DistrictPlanner.Controllers
 {
@@ -13,25 +14,34 @@ namespace DistrictPlanner.Controllers
     [ApiController]
     public class SettlementsController : ControllerBase
     {
-        private readonly DistrictPlannerContext _context;
+        private readonly SettlementsService _settlementService; 
 
         public SettlementsController(DistrictPlannerContext context)
         {
-            _context = context;
+            this._settlementService = new SettlementsService(context);
         }
 
         // GET: api/Settlement
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Settlement>>> GetSettlements()
         {
-            return await _context.Settlements.ToListAsync();
+            return await _settlementService.GetSettlements();
+        }
+
+        // POST: api/Settlement
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see https://aka.ms/RazorPagesCRUD.
+        [HttpGet("main")]
+        public async Task<ActionResult<Settlement>> GetMainSettlement()
+        {
+            return await _settlementService.GetMainSettlement();
         }
 
         // GET: api/Settlement/5
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult<Settlement>> GetSettlement(int id)
         {
-            var settlement = await _context.Settlements.FindAsync(id);
+            var settlement = await _settlementService.GetSettlement(id);
 
             if (settlement == null)
             {
@@ -52,23 +62,7 @@ namespace DistrictPlanner.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(settlement).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!SettlementExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _settlementService.PutSettlement(id,settlement);
 
             return NoContent();
         }
@@ -79,45 +73,19 @@ namespace DistrictPlanner.Controllers
         [HttpPost]
         public async Task<ActionResult<Settlement>> PostSettlement(Settlement settlement)
         {
-            _context.Settlements.Add(settlement);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (SettlementExists(settlement.SettlementId))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _settlementService.PostSettlement(settlement);
 
             return CreatedAtAction("GetSettlement", new { id = settlement.SettlementId }, settlement);
         }
+
+        
 
         // DELETE: api/Settlement/5
         [HttpDelete("{id}")]
         public async Task<ActionResult<Settlement>> DeleteSettlement(int id)
         {
-            var settlement = await _context.Settlements.FindAsync(id);
-            if (settlement == null)
-            {
-                return NotFound();
-            }
-
-            _context.Settlements.Remove(settlement);
-            await _context.SaveChangesAsync();
-
-            return settlement;
+            return await _settlementService.DeleteSettlement(id);
         }
 
-        private bool SettlementExists(int id)
-        {
-            return _context.Settlements.Any(e => e.SettlementId == id);
-        }
     }
 }
